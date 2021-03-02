@@ -3,9 +3,8 @@ const styles = css`
   display: flex;
   justify-content: space-around;
   align-items: center;
-  margin: 0 auto;
+  margin: 186px auto 0;
   max-width: 1440px;
-  height: 820px;
   div.confirm {
     display: flex;
     align-items: center;
@@ -32,8 +31,26 @@ const styles = css`
       color: rgba(37, 67, 83, 0.4);
       margin: 0;
     }
-    span.additional {
+    span.singleLine {
+      white-space: nowrap;
+    }
+    span.email {
       color: rgba(37, 67, 83, 0.75);
+    }
+    div.mainButton {
+      width: 430px;
+      height: 50px;
+      background: #57b3e4;
+      border: none;
+      border-radius: 35px;
+      font-weight: 700;
+      font-size: 18px;
+      line-height: 50px;
+      text-align: center;
+      color: #ffffff;
+      margin-top: 40px;
+      position: relative;
+      cursor: pointer;
     }
     button {
       font-weight: 600;
@@ -44,21 +61,7 @@ const styles = css`
       text-decoration-line: underline;
       color: rgba(37, 67, 83, 0.75);
       margin-top: 15px;
-    }
-    div.mainButton {
-      width: 430px;
-      height: 50px;
-      background: #57b3e4;
-      border: none;
-      border-radius: 35px;
-      font-weight: bold;
-      font-size: 18px;
-      line-height: 50px;
-      text-align: center;
-      color: #ffffff;
-      margin-top: 40px;
-
-      position: relative;
+      cursor: pointer;
     }
     button:focus {
       outline: none;

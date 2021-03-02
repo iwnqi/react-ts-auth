@@ -3,6 +3,7 @@ import { css } from "@emotion/react";
 import styles from "./styles";
 import React, { useRef, useState, ReactNode } from "react";
 import app from "../../firebase";
+import Spinner from "../ButtonSpinner/ButtonSpinner";
 interface IAccountCreation {
   children?: ReactNode;
   onAuthenticate: () => void;
@@ -10,9 +11,13 @@ interface IAccountCreation {
 const AccountCreation: React.FC<IAccountCreation> = (props) => {
   const emailRef = useRef<HTMLInputElement>(null);
   const passwordRef = useRef<HTMLInputElement>(null);
+
   const [errorMessage, setErrorMessage] = useState<null | string>(null);
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
+  const [mainButtonInner, setButtonInner] = useState<string | React.ReactNode>(
+    "Create account"
+  );
   const onEmailChange = () => {
     setEmail(emailRef.current!.value);
   };
@@ -23,24 +28,27 @@ const AccountCreation: React.FC<IAccountCreation> = (props) => {
 
   const { onAuthenticate } = props;
 
-  const handleSubmit = (event: React.MouseEvent<HTMLButtonElement>) => {
-    event.preventDefault();
+  const handleSubmit = () => {
     if (passwordRef.current!.value.length < 8) {
       setErrorMessage("Password must contain at least 8 characters");
       return;
     }
+    setButtonInner(<Spinner />);
     const actionCodeSettings = {
       url: "http://localhost:3000/home",
       handleCodeInApp: true,
     };
+
     app
       .auth()
       .createUserWithEmailAndPassword(email, password)
       .then(() => {
+        localStorage.removeItem("compareSeconds");
         app.auth().currentUser!.sendEmailVerification(actionCodeSettings);
       })
       .catch((error) => {
         setErrorMessage(error.message);
+        setButtonInner("Create account");
       })
       .finally(() => {
         if (errorMessage) return;
@@ -55,7 +63,9 @@ const AccountCreation: React.FC<IAccountCreation> = (props) => {
     >
       <div>
         <h1>Create account</h1>
-        <label htmlFor="email">Email</label>
+        <label htmlFor="email">
+          <span>Email </span>
+        </label>
         <input
           onChange={onEmailChange}
           ref={emailRef}
@@ -75,9 +85,9 @@ const AccountCreation: React.FC<IAccountCreation> = (props) => {
           placeholder="••••••••••••••••••••"
         />
         <span className="error">{errorMessage}</span>
-        <button type="submit" onClick={handleSubmit}>
-          Create account
-        </button>
+        <div className="mainButton" onClick={handleSubmit}>
+          {mainButtonInner}
+        </div>
       </div>
     </div>
   );

@@ -11,6 +11,7 @@ import {
 } from "react-router-dom";
 import app from "../firebase";
 import PrivateRoute from "../PrivateRoute";
+import PageSpinner from "./PageSpinner/PageSpinner";
 
 const App: React.FC = () => {
   const [isAuthenticated, setAuthenticationStatus] = useState<boolean>(false);
@@ -19,7 +20,7 @@ const App: React.FC = () => {
     "/"
   );
   const intervalId = useRef<any>(null);
-
+  const [isLoading, setLoadingStatus] = useState<boolean>(true);
   useEffect(() => {
     if (isAuthenticated && !isConfirmed) {
       intervalId.current = setInterval(() => {
@@ -27,11 +28,13 @@ const App: React.FC = () => {
       }, 600);
     }
 
-    if (!isAuthenticated || isConfirmed) clearInterval(intervalId.current);
+    if (!isAuthenticated || isConfirmed) {
+      clearInterval(intervalId.current);
+    }
     return () => {
       clearInterval(intervalId.current);
     };
-  });
+  }, [isAuthenticated, isConfirmed]);
   const onAuthenticate: () => void = () => {
     setAuthenticationStatus(true);
     checkVerification();
@@ -39,17 +42,20 @@ const App: React.FC = () => {
 
   function checkVerification(): void {
     if (app.auth().currentUser && app.auth().currentUser!.emailVerified) {
+      setLoadingStatus(false);
       setConfirmationStatus(true);
       setRedirectTo("/home");
       clearInterval(intervalId.current);
     }
     if (app.auth().currentUser && !app.auth().currentUser!.emailVerified) {
+      setLoadingStatus(false);
       setAuthenticationStatus(true);
       setRedirectTo("/confirmation");
-    }
+    } else setLoadingStatus(false);
   }
   function onSignOut(): void {
     app.auth().signOut();
+
     setAuthenticationStatus(false);
     setConfirmationStatus(false);
     window.clearInterval(intervalId.current);
@@ -57,13 +63,23 @@ const App: React.FC = () => {
   app.auth().onAuthStateChanged(() => {
     checkVerification();
   });
+  const MainPage = () => {
+    if (isLoading) return <PageSpinner />;
+    else
+      return (
+        <Route path="/">
+          <AccountCreation onAuthenticate={onAuthenticate} />
+        </Route>
+      );
+  };
 
   return (
     <div className="App">
       <Header />
+
       <Router>
         <Redirect to={redirectTo} />
-        {/*if isConfirmed/isAuthenticated then render Redirect to="/confirmation"*/}
+
         <Switch>
           <PrivateRoute
             isAuthenticated={isAuthenticated}
@@ -79,10 +95,7 @@ const App: React.FC = () => {
             path="/home"
             component={HomePage}
           />
-
-          <Route path="/">
-            <AccountCreation onAuthenticate={onAuthenticate} />
-          </Route>
+          <MainPage />
         </Switch>
       </Router>
     </div>

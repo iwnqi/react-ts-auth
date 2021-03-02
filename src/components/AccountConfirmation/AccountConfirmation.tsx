@@ -5,7 +5,7 @@ import mail from "./assets/mail.png";
 import app from "../../firebase";
 
 import React, { ReactNode, useEffect, useState } from "react";
-import Spinner from "../Spinner/Spinner";
+import Spinner from "../ButtonSpinner/ButtonSpinner";
 interface IAccountConfirmationProps {
   children?: ReactNode;
   isAuthenticated: boolean;
@@ -26,7 +26,6 @@ const AccountConfirmation: React.FC<IAccountConfirmationProps> = (props) => {
         setEmail(newEmail);
       }
     });
-    localStorage.removeItem("compareSeconds");
     coolDownHandler();
   }, []);
 
@@ -77,9 +76,14 @@ const AccountConfirmation: React.FC<IAccountConfirmationProps> = (props) => {
       <div className="confirm">
         <h1>Confirm account</h1>
         <p>
-          Please confirm your email by clicking on the link in the confirmation
-          email that we sent to
-          <span className="additional"> {email}</span>
+          <span className="singleLine">
+            Please confirm your email by clicking on
+          </span>{" "}
+          <span className="singleLine">
+            the link in the confirmation email that
+          </span>{" "}
+          we sent to
+          <span className="email"> {email}</span>
         </p>
         <div className="mainButton" onClick={onResend}>
           {buttonInner}

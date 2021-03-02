@@ -33,6 +33,7 @@ const styles = css`
       text-align: center;
       color: #ffffff;
       margin: 40px 0;
+      cursor: pointer;
     }
     button:focus {
       outline: none;
